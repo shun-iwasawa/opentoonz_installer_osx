@@ -67,6 +67,23 @@ for FROMPATH in \`otool -L $CVLIB | grep "@rpath/libopencv" | sed -e"s/ (.*$//"\
 done`
 puts "#{TMP}"
 
+# Modify Other library paths
+puts "Modify remaining library paths"
+TMP = `for TARGETLIB in \`find #{VIRTUAL_ROOT}/#{APP}/#{INSTALL_BUNDLE}/Contents/Frameworks -type f | grep dylib\`\n\
+  do\n\
+  echo $TARGETLIB\n\
+  for FROMPATH in \`otool -L $TARGETLIB | grep "@rpath/" | sed -e"s/ (.*$//"\`\n\
+  do\n\
+    echo " $FROMPATH"\n\
+    LIBNAME=\`basename $FROMPATH\`\n\
+    if [[ -e #{VIRTUAL_ROOT}/#{APP}/#{INSTALL_BUNDLE}/Contents/Frameworks/$LIBNAME ]]; then\n\
+      echo "  $LIBNAME found in Frameworks!"\n\
+      install_name_tool -change "$FROMPATH" "@executable_path/../Frameworks/$LIBNAME" $TARGETLIB\n\
+    fi\n\
+  done\n\
+done`
+puts "#{TMP}"
+
 # plist が存在しない場合は生成し、必要な変更を適用
 PKG_PLIST = "app.plist"
 unless File.exist? PKG_PLIST then
