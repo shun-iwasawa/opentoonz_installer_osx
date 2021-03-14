@@ -72,7 +72,8 @@ puts "Modify remaining library paths"
 TMP = `for TARGETLIB in \`find #{VIRTUAL_ROOT}/#{APP}/#{INSTALL_BUNDLE}/Contents/Frameworks -type f | grep dylib\`\n\
   do\n\
   echo $TARGETLIB\n\
-  for FROMPATH in \`otool -L $TARGETLIB | grep "@rpath/" | sed -e"s/ (.*$//"\`\n\
+  TLIBNAME=\`basename $TARGETLIB\`\n\
+  for FROMPATH in \`otool -L $TARGETLIB | grep ".dylib" | grep -v "$TLIBNAME" | grep -v "@executable_path/../Frameworks" | sed -e"s/ (.*$//"\`\n\
   do\n\
     echo " $FROMPATH"\n\
     LIBNAME=\`basename $FROMPATH\`\n\
