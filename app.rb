@@ -74,13 +74,13 @@ for FROMPATH in \`otool -L $CVLIB | grep "@rpath/libopencv" | sed -e"s/ (.*$//"\
 done`
 puts "#{TMP}"
 
-# Modify dependent library paths in binaries
+# Modify dependent library paths in binaries (just in case)
 puts "Modify dependent library paths in binaries"
 TMP = `for TARGETBINARY in \`find #{VIRTUAL_ROOT}/#{APP}/#{INSTALL_BUNDLE}/Contents/MacOS -type f | grep -v dylib | grep -v OpenToonz\`\n\
   do\n\
   echo $TARGETBINARY\n\
   BINNAME=\`basename $TARGETBINARY\`\n\
-  for FROMPATH in \`otool -L $TARGETBINARY | grep ".dylib" | grep -v "$BINNAME" | grep -v "@executable_path/../Frameworks" | sed -e"s/ (.*$//"\`\n\
+  for FROMPATH in \`otool -L $TARGETBINARY | grep ".dylib" | grep -v "$BINNAME" | grep -v "@executable_path" | grep -v "@loader_path" | sed -e"s/ (.*$//"\`\n\
   do\n\
     echo " $FROMPATH"\n\
     LIBNAME=\`basename $FROMPATH\`\n\
