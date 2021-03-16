@@ -28,11 +28,18 @@ THIS_DIRECTORY = File.dirname(__FILE__)
 PKG_ID = "io.github.opentoonz"
 PKG_TMP = "OpenToonzBuild.pkg"
 FINAL_PKG = "OpenToonz.pkg"
+OPTION_STR = "-executable=OpenToonz.app/Contents/MacOS/lzocompress \
+-executable=OpenToonz.app/Contents/MacOS/lzodecompress \
+-executable=OpenToonz.app/Contents/MacOS/tcleanup \
+-executable=OpenToonz.app/Contents/MacOS/tcomposer \
+-executable=OpenToonz.app/Contents/MacOS/tconverter \
+-executable=OpenToonz.app/Contents/MacOS/tfarmcontroller \
+-executable=OpenToonz.app/Contents/MacOS/tfarmserver"
 
 # カレントへバンドルをコピー
 exec_with_assert "cp -r #{SRC_BUNDLE_PATH} #{INSTALL_BUNDLE}"
 # deployqt を適用
-exec_with_assert "#{MACDEPLOYQT_PATH} #{INSTALL_BUNDLE}"
+exec_with_assert "#{MACDEPLOYQT_PATH} #{INSTALL_BUNDLE} #{OPTION_STR}"
 
 # VirtualRoot への設置
 # 既存を削除して設置
