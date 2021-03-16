@@ -86,7 +86,7 @@ TMP = `for TARGETBINARY in \`find #{VIRTUAL_ROOT}/#{APP}/#{INSTALL_BUNDLE}/Conte
     LIBNAME=\`basename $FROMPATH\`\n\
     if [[ -e #{VIRTUAL_ROOT}/#{APP}/#{INSTALL_BUNDLE}/Contents/Frameworks/$LIBNAME ]]; then\n\
       echo "  $LIBNAME found in Frameworks!"\n\
-      install_name_tool -change "$FROMPATH" "@executable_path/../Frameworks/$LIBNAME" $TARGETBINARY\n\
+      install_name_tool -change "$FROMPATH" "@loader_path/../Frameworks/$LIBNAME" $TARGETBINARY\n\
     fi\n\
   done\n\
 done`
