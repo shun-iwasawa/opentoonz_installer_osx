@@ -36,6 +36,9 @@ OPTION_STR = "-executable=OpenToonz.app/Contents/MacOS/lzocompress \
 -executable=OpenToonz.app/Contents/MacOS/tfarmcontroller \
 -executable=OpenToonz.app/Contents/MacOS/tfarmserver"
 
+DELETE_RPATH_SELF = "/Users/"
+DELETE_RPATH_CELLAR = "/usr/local/Cellar/"
+
 # カレントへバンドルをコピー
 exec_with_assert "cp -r #{SRC_BUNDLE_PATH} #{INSTALL_BUNDLE}"
 # deployqt を適用
@@ -89,6 +92,11 @@ TMP = `for TARGETBINARY in \`find #{VIRTUAL_ROOT}/#{APP}/#{INSTALL_BUNDLE}/Conte
       install_name_tool -change "$FROMPATH" "@loader_path/../Frameworks/$LIBNAME" $TARGETBINARY\n\
     fi\n\
   done\n\
+  for RPATH in \`otool -l "$TARGETBINARY" | grep -A 2 LC_RPATH | grep path | sed -e"s/path//" -e"s/ (.*$//" -e"s/ //g" | grep #{DELETE_RPATH_SELF}\`\n\
+  do\n\
+    echo " remove rpath $RPATH from $BINNAME"/n\
+    install_name_tool -delete_rpath "$RPATH" "$TARGETBINARY"\n\
+  done\n\
 done`
 puts "#{TMP}"
 
@@ -106,6 +114,11 @@ TMP = `for TARGETLIB in \`find #{VIRTUAL_ROOT}/#{APP}/#{INSTALL_BUNDLE}/Contents
       echo "  $LIBNAME found in Frameworks!"\n\
       install_name_tool -change "$FROMPATH" "@executable_path/../Frameworks/$LIBNAME" $TARGETLIB\n\
     fi\n\
+  done\n\
+  for RPATH in \`otool -l "$TARGETLIB" | grep -A 2 LC_RPATH | grep path | sed -e"s/path//" -e"s/ (.*$//" -e"s/ //g" | grep #{DELETE_RPATH_CELLAR}\`\n\
+  do\n\
+    echo " remove rpath $RPATH from $LIBNAME"/n\
+    install_name_tool -delete_rpath "$RPATH" "$TARGETLIB"\n\
   done\n\
 done`
 puts "#{TMP}"
